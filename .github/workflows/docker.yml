@@ -30,15 +30,6 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
-      # https://github.com/docker/build-push-action/blob/master/docs/advanced/cache.md#github-cache
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
       # https://stackoverflow.com/questions/59810838/how-to-get-the-short-sha-for-the-github-workflow
       # https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions
       - name: Add SHORT_SHA and BRANCH to env
@@ -60,8 +51,8 @@ jobs:
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:latest , 
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.SHORT_SHA }} ,
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.BRANCH }}
-          cache-from: type=gha,scope=${{ github.workflow }}
-          cache-to: type=gha,scope=${{ github.workflow }},mode=max
+          cache-from: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.BRANCH }}
+          cache-to: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.BRANCH }},mode=max
 
       - name: Build and push ${{ env.image-fetcher }}
         uses: docker/build-push-action@v3
@@ -74,8 +65,8 @@ jobs:
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-fetcher }}:latest , 
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-fetcher }}:${{ env.SHORT_SHA }} ,
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-fetcher }}:${{ env.BRANCH }}
-          cache-from: type=gha,scope=${{ github.workflow }}
-          cache-to: type=gha,scope=${{ github.workflow }},mode=max
+          cache-from: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:release
+          cache-to: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:release,mode=max
 
   release:
     name: Release to Azure Pipelines Production
