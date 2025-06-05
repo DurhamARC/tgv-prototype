@@ -92,6 +92,6 @@ jobs:
         uses: Azure/pipelines@v1.2
         with:
           azure-pipeline-name: ${{ vars.AZURE_DEVOPS_PIPELINE }}
-          azure-devops-project-url: ${{ vars.AZURE_DEVOPS_URL }}
+          azure-devops-project-url: "${{ vars.AZURE_DEVOPS_URL }}"
           azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
 
