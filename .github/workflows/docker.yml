@@ -51,8 +51,8 @@ jobs:
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:latest , 
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.SHORT_SHA }} ,
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.BRANCH }}
-          cache-from: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.BRANCH }}
-          cache-to: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.BRANCH }},mode=max
+          cache-from: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:cache
+          cache-to: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:cache,mode=max
 
       - name: Build and push ${{ env.image-fetcher }}
         uses: docker/build-push-action@v3
@@ -65,8 +65,8 @@ jobs:
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-fetcher }}:latest , 
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-fetcher }}:${{ env.SHORT_SHA }} ,
             ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-fetcher }}:${{ env.BRANCH }}
-          cache-from: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:release
-          cache-to: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:release,mode=max
+          cache-from: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:cache
+          cache-to: type=registry,ref=${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:cache,mode=max
 
   release:
     name: Release to Azure Pipelines Production
