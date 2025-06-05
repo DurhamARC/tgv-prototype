@@ -35,10 +35,8 @@ variables:
 
 jobs:
   - job: release
-    dependsOn: build
     displayName: Release to Azure App Service Environment
     steps:
-
       - task: AzureAppServiceSettings@1
         displayName: Set App Settings for TGV Sidecar app
         inputs:
