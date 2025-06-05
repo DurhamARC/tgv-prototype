@@ -53,7 +53,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-		  file: ${{ env.dockerfile-nginx }}
+          file: ${{ env.dockerfile-nginx }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: >
@@ -67,7 +67,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-		  file: ${{ env.dockerfile-fetcher }}
+          file: ${{ env.dockerfile-fetcher }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: >
@@ -84,7 +84,7 @@ jobs:
 
     # Only run for Release branch, and NOT PRs
     if: github.ref == 'refs/heads/release'
-      	&& github.event_name != 'pull_request'
+        && github.event_name != 'pull_request'
 #      && github.event.workflow_run.conclusion == 'success'
 
     steps:
