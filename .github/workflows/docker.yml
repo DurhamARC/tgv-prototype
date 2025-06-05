@@ -1,0 +1,97 @@
+# Github Actions configuration for building Docker container images
+name: Build Docker Images
+
+on:
+  push:
+    branches:
+     - 'release'
+
+env:
+  dockerfile-nginx: 'docker/Dockerfile.nginx'
+  image-nginx: 'arc/tgv-nginx'
+  dockerfile-fetcher: 'docker/Dockerfile.python-fetcher'
+  image-fetcher: 'arc/tgv-fetcher'
+
+jobs:
+  docker:
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.AZURE_ACR_REGISTRY }}
+          username: ${{ secrets.AZURE_ACR_USER }}
+          password: ${{ secrets.AZURE_ACR_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      # https://github.com/docker/build-push-action/blob/master/docs/advanced/cache.md#github-cache
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # https://stackoverflow.com/questions/59810838/how-to-get-the-short-sha-for-the-github-workflow
+      # https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions
+      - name: Add SHORT_SHA and BRANCH to env
+        run: |
+          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV \
+          && echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push ${{ env.image-nginx }}
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+		  file: ${{ env.dockerfile-nginx }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: >
+            ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:latest , 
+            ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.SHORT_SHA }} ,
+            ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-nginx }}:${{ env.BRANCH }}
+          cache-from: type=gha,scope=${{ github.workflow }}
+          cache-to: type=gha,scope=${{ github.workflow }},mode=max
+
+      - name: Build and push ${{ env.image-fetcher }}
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+		  file: ${{ env.dockerfile-fetcher }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: >
+            ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-fetcher }}:latest , 
+            ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-fetcher }}:${{ env.SHORT_SHA }} ,
+            ${{ secrets.AZURE_ACR_REGISTRY }}/${{ env.image-fetcher }}:${{ env.BRANCH }}
+          cache-from: type=gha,scope=${{ github.workflow }}
+          cache-to: type=gha,scope=${{ github.workflow }},mode=max
+
+  release:
+    name: Release to Azure Pipelines Production
+    needs: docker
+    runs-on: ubuntu-latest
+
+    # Only run for Release branch, and NOT PRs
+    if: github.ref == 'refs/heads/release'
+      	&& github.event_name != 'pull_request'
+#      && github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Azure Pipelines Action
+        uses: Azure/pipelines@v1.2
+        with:
+          azure-pipeline-name: ${{ vars.AZURE_DEVOPS_PIPELINE }}
+          azure-devops-project-url: ${{ vars.AZURE_DEVOPS_URL }}
+          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+

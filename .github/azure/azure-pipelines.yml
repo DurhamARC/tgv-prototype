@@ -1,0 +1,61 @@
+# TGV Docker Deployment to AWH
+
+# Add steps that run tests, save build artifacts, deploy, and more:
+# https://learn.microsoft.com/en-gb/azure/devops/pipelines/ecosystems/containers/acr-template
+# Manually triggered from build-azure.yml
+# https://aka.ms/yaml
+
+trigger: none
+pr: none
+appendCommitMessageToRunName: true
+
+pool:
+ name: Default
+ demands:
+ - Agent.Name -equals vmlsha1
+
+resources:
+- repo: self
+
+variables:
+  - group: arc-germanvoice-deployment
+
+  # Azure container registry connection details
+  - name: azureSubscription
+    value: 'svc-con-awh-01'
+    
+  # Sidecar container app name
+  # This is the name of the app service which will run the sidecar container on Azure ASE
+  # The app service is created in the resource group specified below
+  - name: appName
+    value: 'duuksawharc-germanvoice-01'
+  # Resource Group
+  - name: appResourceGroupName
+    value: 'du-uks-awh-arc-germanvoice-rg'
+
+jobs:
+  - job: release
+    dependsOn: build
+    displayName: Release to Azure App Service Environment
+    steps:
+
+      - task: AzureAppServiceSettings@1
+        displayName: Set App Settings for TGV Sidecar app
+        inputs:
+          azureSubscription: '$(azureSubscription)'
+          appName: '$(appName)'
+          resourceGroupName: '$(appResourceGroupName)'
+          appSettings: |
+            [
+              { "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE", "value": "true" },
+              { "name": "TYPESENSE_API_KEY", "value": "$(TYPESENSE_API_KEY)" },
+              { "name": "TYPESENSE_DATA_DIR", "value": "$(TYPESENSE_DATA_DIR)" },
+              { "name": "TYPESENSE_HOST", "value": "127.0.0.1"}
+            ]
+
+      - task: AzureAppServiceManage@0
+        displayName: Restart Sidecar App (germanvoice.awh.durham.ac.uk)
+        inputs:
+          azureSubscription: 'svc-con-awh-01'
+          Action: 'Restart Azure App Service'
+          WebAppName: $(appName)
