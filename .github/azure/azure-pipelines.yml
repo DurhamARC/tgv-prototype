@@ -45,10 +45,10 @@ jobs:
           resourceGroupName: '$(appResourceGroupName)'
           appSettings: |
             [
-              { "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE", "value": "true" },
+              { "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE", "value": "false" },
               { "name": "TYPESENSE_API_KEY", "value": "$(TYPESENSE_API_KEY)" },
               { "name": "TYPESENSE_DATA_DIR", "value": "$(TYPESENSE_DATA_DIR)" },
-              { "name": "TYPESENSE_HOST", "value": "127.0.0.1"}
+              { "name": "TYPESENSE_HOST", "value": "$(TYPESENSE_HOST)" }
             ]
 
       - task: AzureAppServiceManage@0
