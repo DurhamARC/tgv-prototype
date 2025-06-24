@@ -59,36 +59,21 @@ Some useful commands
 
 It is important to keep track of when environment variables are being "injected" into the application. Sometimes it is done during the image build and other times it is done during runtime.
 
-#### Sample `.env` file for local testing
+#### `.env` file for local testing
 
-The frontent application will be available at localhost:8100 
+The frontend application will be available at localhost:8100 
 
 ```bash
-TYPESENSE_API_KEY=
+TYPESENSE_API_KEY=replace-me
 TYPESENSE_HOST=localhost
+TYPESENSE_PORT=8100
 TYPESENSE_UPSTREAM_HOST=typesense
+TYPESENSE_PROTOCOL=http
+TYPESENSE_PATH=/api
 TYPESENSE_FETCHER_HOST=nginx
 TYPESENSE_FETCHER_PORT=80
 TYPESENSE_FETCHER_PROTOCOL=http
-TYPESENSE_FETCHER_PATH="/api"
-TYPESENSE_PORT=8100
-TYPESENSE_PROTOCOL=http
-TYPESENSE_PATH="/api"
-
-```
-
-#### Indicative `.env` file for deployment to AWH
-
-This respects the convention that AWH sidecar applications are all exposed as `localhost`, rather than at their own hostnames (as works for local Docker compose) 
-
-```bash
-TYPESENSE_API_KEY=
-TYPESENSE_HOST=
-TYPESENSE_UPSTREAM_HOST=localhost
-TYPESENSE_FETCHER_HOST=localhost
-TYPESENSE_PORT=80
-TYPESENSE_PROTOCOL=https
-TYPESENSE_PATH="/api"
+TYPESENSE_FETCHER_PATH=/api
 ```
 
 ## Design
