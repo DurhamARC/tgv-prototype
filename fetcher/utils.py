@@ -60,6 +60,9 @@ def get_query_value(url, key):
     value = query_params.get(key, [None])[0]
     return value
 
+def datum_to_iso_8601(datum):
+    return "-".join([datum[0:4], datum[4:6], datum[6:]])
+
 def download_remote_file(url, path, session):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     

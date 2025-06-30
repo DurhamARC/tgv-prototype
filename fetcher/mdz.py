@@ -52,7 +52,7 @@ class MDZDataSource(DataSource):
 
         hocr_dir = os.path.join(output_dir, 'hocr')
         os.makedirs(hocr_dir, exist_ok=True)
-        
+      
         for sequence in manifest['sequences']:
             for canvas in tqdm.tqdm(sequence['canvases'], desc=f"Downloading {item_id}"):
                 label = canvas['label']
@@ -79,11 +79,21 @@ class MDZDataSource(DataSource):
         
         title_full = manifest['label']
 
+        structures = manifest.get("structures", None)
+        canvas_to_structure_label = {}
+
+        if structures:
+            for structure in structures:
+                canvases = structure.get("canvases", [])
+                for canvas in canvases:
+                    canvas_to_structure_label[canvas] = structure["label"]
+
         remote_path = None
         image_url = None
         for sequence in manifest['sequences']:
             for canvas in sequence['canvases']:
                 if label == canvas['label']:
+                    date = canvas_to_structure_label.get(canvas['@id'], "n.d.")
                     remote_path = canvas['seeAlso']['@id']
                     for image in canvas['images']:
                         original_image_url = image['resource']['@id']
@@ -100,6 +110,7 @@ class MDZDataSource(DataSource):
             "source": SOURCE_ID,
             "title_id": title_id,
             "title_full": title_full,
+            "date": date,
             "page_number": label,
             "remote_path": remote_path,
             "image_url": image_url,
