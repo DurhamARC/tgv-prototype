@@ -1,43 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Historical Document Search</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/typesense@1.8.2/dist/typesense.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historical Document Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/typesense@1.8.2/dist/typesense.min.js"></script>
 </head>
 <body>
-  <section class="section">
+<section class="section">
     <div class="container">
-      <h1 class="title">Historical Document Search</h1>
-      <div class="field">
-        <div class="control">
-          <input id="search-box" class="input is-large" type="text" placeholder="Search historical documents...">
-        </div>
-      </div>
-
-      <div class="filters">
-        <div class="field is-grouped">
-          <div class="control">
-            <div class="select">
-              <select id="source-filter">
-                <option value="">All Sources</option>
-                <option value="anno.onb.ac.at">ANNO</option>
-                <option value="api.digitale-sammlungen.de">MDZ</option>
-                <option value="iiif.onb.ac.at">ABO</option>
-              </select>
+        <h1 class="title">Historical Document Search</h1>
+        <div class="field">
+            <div class="control">
+                <input id="search-box" class="input is-large" type="text" placeholder="Search historical documents...">
             </div>
-          </div>
-          <div class="control">
-            <input id="results-per-page" class="input" type="number" min="5" max="50" value="10" placeholder="Results per page">
-          </div>
         </div>
-      </div>
 
-      <div id="results"></div>
-      <div id="pagination" class="pagination is-centered" role="navigation"></div>
+        <div class="filters">
+            <div class="field is-grouped">
+                <div class="field">
+                    <label class="label">Filter by Platform</label>
+                    <div class="control">
+                        <div class="select">
+                            <select id="source-filter">
+                                <option value="">Select Platform</option>
+                                <option value="anno.onb.ac.at">ANNO</option>
+                                <option value="api.digitale-sammlungen.de">MDZ</option>
+                                <option value="iiif.onb.ac.at">ABO</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field" style="margin-left: 1rem;">
+                    <label class="label">Results per Page</label>
+                    <div class="control">
+                        <input id="results-per-page" class="input" type="number" min="5" max="50" value="10"
+                               placeholder="Results per page">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="results"></div>
+        <div id="pagination" class="pagination is-centered" role="navigation"></div>
     </div>
   </section>
   
