@@ -143,7 +143,7 @@ function displayResults(results) {
 
         const title = document.createElement('p');
         title.className = 'title is-4';
-        title.textContent = `${result.document.title_id} - Page ${result.document.page_number}`;
+        title.textContent = `${result.document.title_full} - Date ${result.document.date} - Page ${result.document.page_number}`;
 
         const sourceTag = document.createElement('span');
         sourceTag.className = 'tag is-info source-tag';
